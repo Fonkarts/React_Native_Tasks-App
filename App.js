@@ -1,41 +1,29 @@
 import { useState } from "react";
-import { StyleSheet, Text, View, Button, TextInput } from "react-native";
+import { StyleSheet, View, FlatList } from "react-native";
+import GoalItem from './components/GoalItem'
+import GoalInput from './components/GoalInput'
 
 export default function App() {
-    const [enteredGoalText, setEnteredGoalText] = useState("");
     const [courseGoals, setCourseGoals] = useState([]);
 
-    function goalInputHandler(enteredText) {
-        setEnteredGoalText(enteredText);
-    }
-
-    function addGoalHandler() {
+    function addGoalHandler(enteredGoalText) {
         setCourseGoals((currentCourseGoals) => [
             ...currentCourseGoals,
-            enteredGoalText,
+            {text: enteredGoalText, key: Math.random().toString()},
         ]);
     }
 
     return (
         <View style={styles.appContainer}>
-            <View style={styles.inputContainer}>
-                <TextInput
-                    style={styles.text}
-                    placeholder="Your course goal !"
-                    onChangeText={goalInputHandler}
-                />
-                <Button
-                    title="Add Goal"
-                    color="blue"
-                    onPress={addGoalHandler}
-                />
-            </View>
+            <GoalInput onAddGoal={addGoalHandler} />
             <View style={styles.goalsContainer}>
-                {courseGoals.map((goal) => (
-                    <Text key={goal} style={styles.goalItem}>
-                        {goal}
-                    </Text>
-                ))}
+                <FlatList 
+                    data={courseGoals} 
+                    renderItem={itemData => {
+                        return <GoalItem value={itemData.item.text}/>
+                    }} 
+                    overScrollMode="auto"
+                    />
             </View>
         </View>
     );
@@ -47,32 +35,50 @@ const styles = StyleSheet.create({
         paddingTop: 50,
         paddingHorizontal: 16,
     },
-    inputContainer: {
-        flex: 1,
-        flexDirection: "row",
-        // Organizes elements around the main axis
-        justifyContent: "space-between",
-        // Organizes elements around the cross axis
-        alignItems: "center",
-        marginBottom: 24,
-        borderBottomWidth: 1,
-        borderBottomColor: "#cccccc",
-    },
-    text: {
-        borderWidth: 1,
-        borderColor: "#cccccc",
-        width: "70%",
-        marginRight: 8,
-        padding: 8,
-    },
     goalsContainer: {
         flex: 6,
     },
-    goalItem: {
-        margin: 8,
-        padding: 8,
-        borderRadius: 6,
-        backgroundColor: "#5e0acc",
-        color: "white",
-    },
 });
+
+/* ABOUT VIEWS & TEXT
+// NOTE : By default, VIEWs are not scrollable !!
+Don't forget to wrap TEXT in VIEW to make borderRadius work on TEXT on IOS !!
+Moreover, as styles are not CSS in RN, there's no styling inheritance.
+Each element have to have its own styling
+That's why we had to add another styling object to TEXT, to set the color
+(If color is only set in VIEW, TEXT won't get it...) */
+
+
+/* ABOUT SCROLLVIEWs 
+
+Make sure to wrap SCROLLVIEW in a VIEW to set the display !
+Otherwise it won't work as the allocated space is determined by the
+SCROLLVIEW'S PARENT ! 
+
+SCROLLVIEW should only be used for short list of items as it always 
+renders its children, even if they are not yet visible. If it has a lot of children, that may cause some
+PERFORMANCE issues.
+For large lists use FLATLIST, as it will render items lazily.  
+
+OVERSCROLLMODE allows the user to scroll only if the content is 
+larger than the allocated space. 
+Instead of SCROLLVIEW, FLATLIST render objects tha give us access
+to some metadata, such as the INDEX property */
+
+
+/* ABOUT FLATLISTS
+FLATLIST & KEYS :
+There are two ways to assign keys to the rendered children.
+
+The first one consists in passing an object to the FLATLIST, which contains
+a KEY property. 
+{text: myText, key: Math.random().toString} for example.
+
+And the second one should be used in case we can't define keys because there are already one.
+Like if we're consuming API for example.
+In this case we can add another prop to FLATLIST, whiwh is KEYEXTRACTOR
+
+keyExtractor={(item, index) => {
+    return item.id (assuming that the item we receive has an id property)
+}}
+*/
