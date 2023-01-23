@@ -9,8 +9,14 @@ export default function App() {
     function addGoalHandler(enteredGoalText) {
         setCourseGoals((currentCourseGoals) => [
             ...currentCourseGoals,
-            {text: enteredGoalText, key: Math.random().toString()},
+            {text: enteredGoalText, id: Math.random().toString()},
         ]);
+    }
+
+    function deleteItemHandler(id) {
+        setCourseGoals((currentCourseGoals) => {
+            return currentCourseGoals.filter((goal) => goal.id !== id)
+        })
     }
 
     return (
@@ -20,7 +26,13 @@ export default function App() {
                 <FlatList 
                     data={courseGoals} 
                     renderItem={itemData => {
-                        return <GoalItem value={itemData.item.text}/>
+                        return (
+                            <GoalItem 
+                                value={itemData.item.text} 
+                                onDeleteItem={deleteItemHandler}
+                                id={itemData.item.id}
+                            />
+                        )
                     }} 
                     overScrollMode="auto"
                     />
