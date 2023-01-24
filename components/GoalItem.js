@@ -5,7 +5,7 @@ function GoalItem(props) {
         <View style={styles.goalItem}>
             <Pressable 
                 // Setting style when pressed on Android
-                android_ripple={{ color: '#210644' }}
+                android_ripple={{ color: '#F9844A' }}
                 onPress={props.onDeleteItem.bind(this, props.id)}
                 // Setting style when pressed on Ios
                 style={({pressed}) => pressed && styles.pressedItem}
@@ -24,11 +24,13 @@ const styles = StyleSheet.create({
     goalItem: {
         margin: 8,
         borderRadius: 6,
-        backgroundColor: "#5e0acc",
+        backgroundColor: "#E14D2A",
+        
     },
     goalItemText: {
         padding: 8,
         color: "white",
+        fontSize: 17
     },
     pressedItem: {
         opacity: 0.5,
